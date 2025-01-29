@@ -1,74 +1,94 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import React, { useState } from 'react';
+import { View, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import TaskComponent from '../component/task';
 
+
+// HomeScreen Component
 export default function HomeScreen() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dates, setDates] = useState(generateDates());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+
+  // Function to generate dates dynamically
+  function generateDates(startDate: Date = new Date(), days = 7) {
+    const datesArray = [];
+    for (let i = 1; i <= days; i++) {
+      const pastDate = new Date(startDate);
+      pastDate.setDate(startDate.getDate() - i);
+      datesArray.push({ key: pastDate.getTime().toString(), date: pastDate.toDateString() });
+    }
+    return datesArray;
+  }
+
+  // Handle date click to show TaskComponent
+  const handleDateClick = (date: string) => {
+    setSelectedDate(date);
+  };
+
+  // Close TaskComponent
+  const handleCloseTaskComponent = () => {
+    setSelectedDate(null);
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
+      {selectedDate ? (
+        <TaskComponent date={selectedDate} onClose={handleCloseTaskComponent} />
+      ) : (
+        <>
+          {/* Search Bar */}
+          <TextInput
+            placeholder="Search tasks"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            style={styles.searchInput}
+          />
+
+          {/* List of Dates */}
+          <FlatList
+            data={dates}
+            keyExtractor={(item) => item.key}
+            onEndReached={() => {
+              const moreDates = generateDates(new Date(dates[dates.length - 1].date), 7);
+              setDates((prevDates) => [...prevDates, ...moreDates]);
+            }}
+            onEndReachedThreshold={0.5}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleDateClick(item.date)} style={styles.dateItem}>
+                <ThemedText>{item.date}</ThemedText>
+              </TouchableOpacity>
+            )}
+          />
+        </>
+      )}
+    </SafeAreaView>
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    padding: 16,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  searchInput: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 16,
+    paddingLeft: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  dateItem: {
+    padding: 16,
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
   },
 });
+
