@@ -1,4 +1,4 @@
-import { StyleSheet, Image, Platform, Text } from 'react-native';
+import { StyleSheet, Image, Platform, Text, SafeAreaView } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -10,9 +10,9 @@ import React from 'react';
 
 export default function TabTwoScreen() {
   return (
-    <>
-    <Text>Week</Text>
-    </>
+    <SafeAreaView>
+      <ThemedText>Week</ThemedText>
+    </SafeAreaView>
   );
 }
 

@@ -8,7 +8,7 @@ import TaskComponent from '../component/task';
 
 
 // HomeScreen Component
-export default function HomeScreen() {
+export default function days() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dates, setDates] = useState(generateDates());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -44,7 +44,7 @@ export default function HomeScreen() {
         <>
           {/* Search Bar */}
           <TextInput
-            placeholder="Search tasks"
+            placeholder="Search taskss"
             value={searchQuery}
             onChangeText={setSearchQuery}
             style={styles.searchInput}
@@ -75,7 +75,8 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    // padding: 16,
+    // backgroundColor:'blue'
   },
   searchInput: {
     height: 40,
@@ -91,4 +92,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
 });
+
+
 
