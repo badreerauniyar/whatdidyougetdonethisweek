@@ -20,24 +20,41 @@ export default function Weeks() {
   function generateWeeks() {
     const weeksArray = [];
     const today = new Date();
-    let currentWeekStart = new Date(today);
-    currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay()); // Set to last Sunday
-
+    let currentWeekStart = new Date(today.getFullYear(), 0, 1); // Start from Jan 1st
+    let currentWeekEnd = new Date(currentWeekStart); // Copy of start date
+  
     while (currentWeekStart.getFullYear() === today.getFullYear()) {
-      const weekEnd = new Date(currentWeekStart);
-      weekEnd.setDate(weekEnd.getDate() + 6); // Saturday of the week
-
-      if (currentWeekStart > today) break; // Stop generating future weeks
-
-      weeksArray.unshift({
-        key: currentWeekStart.getTime().toString(),
-        week: `${currentWeekStart.toDateString()} - ${weekEnd.toDateString()}`,
-        start: currentWeekStart.toDateString(),
-        end: weekEnd.toDateString(),
-      });
-
-      currentWeekStart.setDate(currentWeekStart.getDate() - 7); // Move to previous Sunday
+        // Set `currentWeekEnd` to 6 days later
+        currentWeekEnd = new Date(currentWeekStart);
+        currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
+  
+        // Ensure `currentWeekEnd` is a Saturday
+        if (currentWeekEnd.getDay() !== 6) {
+            const dayDiff = 1+ currentWeekEnd.getDay(); // Days needed to move to Saturday
+            currentWeekEnd.setDate(currentWeekEnd.getDate() - dayDiff);
+        }
+  
+        // Ensure `currentWeekEnd` is still within the same year
+         if (currentWeekEnd.getFullYear() !== today.getFullYear()) {
+             currentWeekEnd = new Date(today.getFullYear(), 11, 31); // Set to Dec 31
+         }
+  
+        // Store week info
+        if(currentWeekStart<=today){
+          weeksArray.push({
+            key: currentWeekStart.getTime().toString(),
+            week: `${currentWeekStart.toDateString()} - ${currentWeekEnd.toDateString()}`,
+            start: currentWeekStart.toDateString(),
+            end: currentWeekEnd.toDateString(),
+        });
+        }else{
+          return weeksArray
+        }
+  
+        currentWeekStart = new Date(currentWeekEnd);
+        currentWeekStart.setDate(currentWeekEnd.getDate() + 1);
     }
+  
     return weeksArray;
   }
 
