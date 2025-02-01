@@ -8,7 +8,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import React from 'react';
 
-export default function TabTwoScreen() {
+export default function Weeks() {
   return (
     <SafeAreaView>
       <ThemedText>Week</ThemedText>

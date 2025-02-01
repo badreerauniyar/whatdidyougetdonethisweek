@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
 import { View, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedText } from '@/components/ThemedText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TaskComponent from '../component/task';
-
+import { Ionicons } from '@expo/vector-icons';
 
 // HomeScreen Component
-export default function days() {
+export default function Days() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dates, setDates] = useState(generateDates());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false); // Controls the modal visibility
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? 'light'];
 
-  // Function to generate dates dynamically
+  // Function to generate past dates
   function generateDates(startDate: Date = new Date(), days = 7) {
     const datesArray = [];
     for (let i = 1; i <= days; i++) {
@@ -26,28 +28,48 @@ export default function days() {
     return datesArray;
   }
 
-  // Handle date click to show TaskComponent
-  const handleDateClick = (date: string) => {
-    setSelectedDate(date);
+  // Show the date picker modal
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
   };
 
-  // Close TaskComponent
-  const handleCloseTaskComponent = () => {
-    setSelectedDate(null);
+  // Hide the date picker modal
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  // Handle date selection
+  const handleConfirm = (date: Date) => {
+    setSelectedDate(date.toDateString()); // Set selected date
+    hideDatePicker();
   };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
       {selectedDate ? (
-        <TaskComponent date={selectedDate} onClose={handleCloseTaskComponent} />
+        <TaskComponent date={selectedDate} onClose={() => setSelectedDate(null)} />
       ) : (
         <>
-          {/* Search Bar */}
-          <TextInput
-            placeholder="Search taskss"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            style={styles.searchInput}
+          {/* Search Bar + Calendar Picker */}
+          <View style={styles.searchContainer}>
+            <TextInput
+              placeholder="Search tasks"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              style={styles.searchInput}
+            />
+            {/* Calendar Button */}
+            <TouchableOpacity onPress={showDatePicker} style={styles.calendarButton}>
+              <Ionicons name="calendar-outline" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Date Picker Modal */}
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
           />
 
           {/* List of Dates */}
@@ -60,7 +82,7 @@ export default function days() {
             }}
             onEndReachedThreshold={0.5}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleDateClick(item.date)} style={styles.dateItem}>
+              <TouchableOpacity onPress={() => setSelectedDate(item.date)} style={styles.dateItem}>
                 <ThemedText>{item.date}</ThemedText>
               </TouchableOpacity>
             )}
@@ -75,16 +97,25 @@ export default function days() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // padding: 16,
-    // backgroundColor:'blue'
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 8,
+    marginTop: 16,
+    marginBottom: 16,
+    paddingHorizontal: 8,
+    height: 50,
   },
   searchInput: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 16,
-    paddingLeft: 8,
+    flex: 1,
+    paddingVertical: 8,
+    color: 'white',
+  },
+  calendarButton: {
+    padding: 8,
   },
   dateItem: {
     padding: 16,
@@ -92,6 +123,3 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
 });
-
-
-
