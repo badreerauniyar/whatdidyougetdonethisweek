@@ -1,12 +1,13 @@
 import { Tabs, useRouter, useSegments } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Platform, View } from "react-native";
+import { ActivityIndicator, Platform, Text, View } from "react-native";
 
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -44,7 +45,10 @@ export default function TabLayout() {
   if (!auth) {
     return null; // Prevents rendering Tabs before redirect happens
   }
-
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.getDate().toString().padStart(2, "0");
+  };
   return (
     <Tabs
       screenOptions={{
@@ -60,18 +64,51 @@ export default function TabLayout() {
         }),
       }}
     >
+      {/* <Tabs.Screen
+        name="index"
+        options={{
+          title: "Day",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar" color={color} />,
+        }}
+      /> */}
       <Tabs.Screen
         name="index"
         options={{
-          title: "index",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: "Day",
+          tabBarIcon: ({ color }) => (
+
+            <Icon name="calendar" size={24} color={color} />
+          ),
         }}
       />
+      {/* <Tabs.Screen
+        name="index"
+        options={{
+          title: "Day",
+          tabBarIcon: ({ color }) => (
+            <View style={{ position: "relative" }}>
+              <Icon name="calendar" size={24} color={color} />
+              <Text
+                style={{
+                  position: "absolute",
+                  top: 5,
+                  left: 10,
+                  fontSize: 12,
+                  fontWeight: "bold",
+                  color: "red",
+                }}
+              >
+                {getCurrentDate()}
+              </Text>
+            </View>
+          ),
+        }}
+      /> */}
       <Tabs.Screen
         name="weeks"
         options={{
           title: "Weeks",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar" color={color} />,
         }}
       />
     </Tabs>
