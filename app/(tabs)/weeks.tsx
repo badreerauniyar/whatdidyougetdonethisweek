@@ -9,7 +9,6 @@ import { Ionicons } from '@expo/vector-icons';
 import WeekTaskComponent from '../component/weeksComponent';
 
 
-// HomeScreen Component
 export default function Weeks() {
   const [searchQuery, setSearchQuery] = useState('');
   const [weeks, setWeeks] = useState(generateWeeks());
@@ -18,59 +17,55 @@ export default function Weeks() {
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? 'light'];
 
-  // Generate all weeks from Sunday to Saturday for the current year
   function generateWeeks() {
     const weeksArray = [];
-    const startDate = new Date(new Date().getFullYear(), 0, 1);
-    let currentWeekStart = startDate;
+    const today = new Date();
+    let currentWeekStart = new Date(today);
+    currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay()); // Set to last Sunday
 
-    while (currentWeekStart.getFullYear() === startDate.getFullYear()) {
+    while (currentWeekStart.getFullYear() === today.getFullYear()) {
       const weekEnd = new Date(currentWeekStart);
       weekEnd.setDate(weekEnd.getDate() + 6); // Saturday of the week
 
-      weeksArray.push({
+      if (currentWeekStart > today) break; // Stop generating future weeks
+
+      weeksArray.unshift({
         key: currentWeekStart.getTime().toString(),
         week: `${currentWeekStart.toDateString()} - ${weekEnd.toDateString()}`,
         start: currentWeekStart.toDateString(),
         end: weekEnd.toDateString(),
       });
 
-      currentWeekStart = new Date(weekEnd);
-      currentWeekStart.setDate(currentWeekStart.getDate() + 1); // Move to next Sunday
+      currentWeekStart.setDate(currentWeekStart.getDate() - 7); // Move to previous Sunday
     }
-
     return weeksArray;
   }
 
-  // Show the date picker modal
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
 
-  // Hide the date picker modal
   const hideDatePicker = () => {
     setDatePickerVisibility(false);
   };
 
-  // Handle week selection (find nearest Sunday)
   const handleConfirm = (date: Date) => {
     const selectedSunday = new Date(date);
-    selectedSunday.setDate(selectedSunday.getDate() - selectedSunday.getDay()); // Go to the nearest Sunday
+    selectedSunday.setDate(selectedSunday.getDate() - selectedSunday.getDay()); // Get nearest Sunday
 
     const selectedSaturday = new Date(selectedSunday);
-    selectedSaturday.setDate(selectedSunday.getDate() + 6); // Saturday of that week
+    selectedSaturday.setDate(selectedSunday.getDate() + 6); // Get Saturday of that week
 
     setSelectedWeek(`${selectedSunday.toDateString()} - ${selectedSaturday.toDateString()}`);
     hideDatePicker();
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}> 
       {selectedWeek ? (
         <WeekTaskComponent week={selectedWeek} onClose={() => setSelectedWeek(null)} />
       ) : (
         <>
-          {/* Search Bar + Calendar Picker */}
           <View style={styles.searchContainer}>
             <TextInput
               placeholder="Search tasks"
@@ -78,13 +73,11 @@ export default function Weeks() {
               onChangeText={setSearchQuery}
               style={styles.searchInput}
             />
-            {/* Calendar Button */}
             <TouchableOpacity onPress={showDatePicker} style={styles.calendarButton}>
               <Ionicons name="calendar-outline" size={24} color="white" />
             </TouchableOpacity>
           </View>
 
-          {/* Date Picker Modal */}
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
             mode="date"
@@ -92,7 +85,6 @@ export default function Weeks() {
             onCancel={hideDatePicker}
           />
 
-          {/* List of Weeks */}
           <FlatList
             data={weeks}
             keyExtractor={(item) => item.key}
@@ -108,7 +100,6 @@ export default function Weeks() {
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
