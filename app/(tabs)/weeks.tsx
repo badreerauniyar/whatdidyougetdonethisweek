@@ -43,20 +43,29 @@ export default function Weeks() {
         if(currentWeekStart<=today){
           weeksArray.push({
             key: currentWeekStart.getTime().toString(),
-            week: `${currentWeekStart.toDateString()} - ${currentWeekEnd.toDateString()}`,
-            start: currentWeekStart.toDateString(),
-            end: currentWeekEnd.toDateString(),
-        });
+            week: `${formatDate(currentWeekStart)} - ${formatDate(currentWeekEnd)}`,
+            start: formatDate(currentWeekStart),
+            databaseStoreFormat:`${currentWeekStart.getTime().toString()}-${currentWeekEnd.getTime().toString()}`,
+            end: formatDate(currentWeekEnd),
+          });
         }else{
-          return weeksArray
+          return weeksArray.reverse()
         }
-  
+        
         currentWeekStart = new Date(currentWeekEnd);
         currentWeekStart.setDate(currentWeekEnd.getDate() + 1);
     }
   
-    return weeksArray;
+    return weeksArray.reverse();
   }
+  function formatDate(date: Date): string {
+    return new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(date);
+  }
+  
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -68,14 +77,15 @@ export default function Weeks() {
 
   const handleConfirm = (date: Date) => {
     const selectedSunday = new Date(date);
-    selectedSunday.setDate(selectedSunday.getDate() - selectedSunday.getDay()); // Get nearest Sunday
-
+    selectedSunday.setDate(selectedSunday.getDate() - selectedSunday.getDay());
+  
     const selectedSaturday = new Date(selectedSunday);
-    selectedSaturday.setDate(selectedSunday.getDate() + 6); // Get Saturday of that week
-
-    setSelectedWeek(`${selectedSunday.toDateString()} - ${selectedSaturday.toDateString()}`);
+    selectedSaturday.setDate(selectedSunday.getDate() + 6);
+  
+    setSelectedWeek(`${formatDate(selectedSunday)} - ${formatDate(selectedSaturday)}`);
     hideDatePicker();
   };
+  
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}> 
