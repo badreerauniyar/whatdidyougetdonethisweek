@@ -111,6 +111,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="notes"
+        options={{
+          title: "Notes",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="note" color={color} />,
+        }}
+      />
     </Tabs>
   );
 }
