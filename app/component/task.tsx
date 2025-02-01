@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, useColorScheme } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,16 +16,20 @@ type Task = {
 };
 
 export default function TaskComponent({ date, onClose }: TaskComponentProps) {
-  const [tasks, setTasks] = useState<Task[]>([
-   
-  ]);
-  
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const taskInputRefs = useRef<{ [key: number]: TextInput | null }>({}); // Stores input references
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? 'light'];
 
   const handleAddTask = () => {
-    const newTask: Task = { id: tasks.length + 1, text: '', completed: false };
+    const newTaskId = tasks.length + 1;
+    const newTask: Task = { id: newTaskId, text: '', completed: false };
+
     setTasks((prevTasks) => [...prevTasks, newTask]);
+
+    setTimeout(() => {
+      taskInputRefs.current[newTaskId]?.focus(); // Focus on the new task input
+    }, 100);
   };
 
   const handleToggleComplete = (id: number) => {
@@ -63,9 +67,12 @@ export default function TaskComponent({ date, onClose }: TaskComponentProps) {
 
             {/* Editable Task Input */}
             <TextInput
+              ref={(input) => (taskInputRefs.current[item.id] = input)} // Store input reference
               style={[styles.taskInput, { textDecorationLine: item.completed ? 'line-through' : 'none' }]}
-              value={item.text} placeholder='Write a task'
+              value={item.text}
+              placeholder='Write a task'
               onChangeText={(text) => handleTextChange(item.id, text)}
+              autoFocus={tasks.length === 1 && item.id === 1} // Focus only for the first task initially
             />
 
             {/* Info Button */}
@@ -134,4 +141,3 @@ const styles = StyleSheet.create({
     marginBottom: 55,
   },
 });
-
