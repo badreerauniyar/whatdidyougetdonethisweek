@@ -42,10 +42,10 @@ export default function Weeks() {
         if(currentWeekStart<=today){
           weeksArray.push({
             key: currentWeekStart.getTime().toString(),
-            week: `${formatDate(currentWeekStart)} - ${formatDate(currentWeekEnd)}`,
-            start: formatDate(currentWeekStart),
+            week: `${formatDateWithDay(currentWeekStart)} - ${formatDateWithDay(currentWeekEnd)}`,
+            start: formatDateWithDay(currentWeekStart),
             databaseStoreFormat:`${currentWeekStart.getTime().toString()}-${currentWeekEnd.getTime().toString()}`,
-            end: formatDate(currentWeekEnd),
+            end: formatDateWithDay(currentWeekEnd),
           });
         }else{
           return weeksArray.reverse()
@@ -57,8 +57,10 @@ export default function Weeks() {
   
     return weeksArray.reverse();
   }
-  function formatDate(date: Date): string {
+
+  function formatDateWithDay(date: Date): string {
     return new Intl.DateTimeFormat('en-GB', {
+      weekday: 'short',
       day: '2-digit',
       month: 'short',
       year: 'numeric',
@@ -80,7 +82,7 @@ export default function Weeks() {
     const selectedSunday = new Date(selectedMonday);
     selectedSunday.setDate(selectedMonday.getDate() + 6);
   
-    setSelectedWeek(`${formatDate(selectedMonday)} - ${formatDate(selectedSunday)}`);
+    setSelectedWeek(`${formatDateWithDay(selectedMonday)} - ${formatDateWithDay(selectedSunday)}`);
     hideWeekPicker();
   };
 
