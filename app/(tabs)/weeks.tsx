@@ -7,6 +7,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import WeekTaskComponent from '../component/weeksComponent';
+import Header from '../component/Header';
 
 export default function Weeks() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -92,18 +93,7 @@ export default function Weeks() {
         <WeekTaskComponent week={selectedWeek} onClose={() => setSelectedWeek(null)} />
       ) : (
         <>
-          <View style={styles.searchContainer}>
-            <TextInput
-              placeholder="Search tasks"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              style={styles.searchInput}
-            />
-            <TouchableOpacity onPress={showWeekPicker} style={styles.calendarButton}>
-              <Ionicons name="calendar-outline" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
-
+          <Header title="Weeks" onDatePickerPress={showWeekPicker} />
           <FlatList
             data={weeks}
             keyExtractor={(item) => item.key}
@@ -140,6 +130,7 @@ export default function Weeks() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
   },
   searchContainer: {
     flexDirection: 'row',
