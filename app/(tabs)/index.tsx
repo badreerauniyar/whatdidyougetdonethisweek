@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -7,6 +7,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TaskComponent from '../component/task';
 import { Ionicons } from '@expo/vector-icons';
+import Header from '../component/Header';
 
 // HomeScreen Component
 export default function Days() {
@@ -50,19 +51,8 @@ export default function Days() {
         <TaskComponent date={selectedDate} onClose={() => setSelectedDate(null)} />
       ) : (
         <>
-          {/* Search Bar + Calendar Picker */}
-          <View style={styles.searchContainer}>
-            <TextInput
-              placeholder="Search tasks"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              style={styles.searchInput}
-            />
-            {/* Calendar Button */}
-            <TouchableOpacity onPress={showDatePicker} style={styles.calendarButton}>
-              <Ionicons name="calendar-outline" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
+          {/* Header */}
+          <Header title="Tasks" onDatePickerPress={showDatePicker} />
 
           {/* Date Picker Modal */}
           <DateTimePickerModal
@@ -97,25 +87,7 @@ export default function Days() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 8,
-    marginTop: 16,
-    marginBottom: 16,
-    paddingHorizontal: 8,
-    height: 50,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 8,
-    color: 'white',
-  },
-  calendarButton: {
-    padding: 8,
+    padding: 16,
   },
   dateItem: {
     padding: 16,

@@ -64,46 +64,15 @@ export default function TabLayout() {
         }),
       }}
     >
-      {/* <Tabs.Screen
-        name="index"
-        options={{
-          title: "Day",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar" color={color} />,
-        }}
-      /> */}
       <Tabs.Screen
         name="index"
         options={{
           title: "Day",
           tabBarIcon: ({ color }) => (
-
             <Icon name="calendar" size={24} color={color} />
           ),
         }}
       />
-      {/* <Tabs.Screen
-        name="index"
-        options={{
-          title: "Day",
-          tabBarIcon: ({ color }) => (
-            <View style={{ position: "relative" }}>
-              <Icon name="calendar" size={24} color={color} />
-              <Text
-                style={{
-                  position: "absolute",
-                  top: 5,
-                  left: 10,
-                  fontSize: 12,
-                  fontWeight: "bold",
-                  color: "red",
-                }}
-              >
-                {getCurrentDate()}
-              </Text>
-            </View>
-          ),
-        }}
-      /> */}
       <Tabs.Screen
         name="weeks"
         options={{
@@ -115,6 +84,14 @@ export default function TabLayout() {
         name="notes"
         options={{
           title: "Notes",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="note" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="SearchScreen"
+        options={{
+          href:null,
+          title: "Search",
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="note" color={color} />,
         }}
       />
