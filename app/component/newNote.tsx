@@ -1,14 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { Text, TextInput, StyleSheet, SafeAreaView, TouchableOpacity,useColorScheme } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Text, TextInput, StyleSheet, SafeAreaView, TouchableOpacity, useColorScheme } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 type NewNoteProps = {
     onClose: () => void;
+    note: {
+        title: string;
+        content: string;
+    } | null;
 }
-export default function NewNote({onClose}: NewNoteProps) {
+export default function NewNote({ onClose, note }: NewNoteProps) {
     const [title, setTitle] = useState('');
-    const [note, setNote] = useState('');
+    const [content, setContent] = useState('');
     const [lastEdited, setLastEdited] = useState<Date | null>(null);
 
     const handleSave = () => {
@@ -17,12 +21,18 @@ export default function NewNote({onClose}: NewNoteProps) {
     };
     const colorScheme = useColorScheme();
     const themeColors = Colors[colorScheme ?? 'light'];
-
+    useEffect(() => {
+        if (note) {
+          setTitle(note.title);
+          setContent(note.content);
+        }
+      }, [note]);
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
+            
             <TouchableOpacity style={styles.backButton} onPress={onClose}>
-                <Ionicons name="arrow-back" size={24} color="white" />
+                    <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
             <TextInput
                 style={styles.titleInput}
@@ -33,8 +43,8 @@ export default function NewNote({onClose}: NewNoteProps) {
             <TextInput
                 style={styles.noteInput}
                 placeholder="Write your note here..."
-                value={note}
-                onChangeText={setNote}
+                value={content}
+                onChangeText={setContent}
                 multiline
             />
             {lastEdited && (
@@ -50,24 +60,25 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        // backgroundColor: '#fff',
+        display: 'flex',
+        flexDirection: 'column',
     },
     backButton: {
         alignSelf: 'flex-start',
         padding: 16,
-      },
+    },
     titleInput: {
         fontSize: 24,
         fontWeight: 'bold',
         // marginBottom: 16,
-        padding:16 ,
+        padding: 16,
         color: 'white'
     },
     noteInput: {
         flexGrow: 1,
         fontSize: 18,
         textAlignVertical: 'top',
-        padding:16 ,
+        padding: 16,
         color: 'white'
 
     },
