@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { View, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import { Calendar } from 'react-native-calendars';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedText } from '@/components/ThemedText';
@@ -8,12 +8,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import WeekTaskComponent from '../component/weeksComponent';
 
-
 export default function Weeks() {
   const [searchQuery, setSearchQuery] = useState('');
   const [weeks, setWeeks] = useState(generateWeeks());
   const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isWeekPickerVisible, setWeekPickerVisibility] = useState(false);
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? 'light'];
 
@@ -28,10 +27,10 @@ export default function Weeks() {
         currentWeekEnd = new Date(currentWeekStart);
         currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
   
-        // Ensure `currentWeekEnd` is a Saturday
-        if (currentWeekEnd.getDay() !== 6) {
-            const dayDiff = 1+ currentWeekEnd.getDay(); // Days needed to move to Saturday
-            currentWeekEnd.setDate(currentWeekEnd.getDate() - dayDiff);
+        // Ensure `currentWeekEnd` is a Sunday
+        if (currentWeekEnd.getDay() !== 0) {
+            const dayDiff = 7 - currentWeekEnd.getDay(); // Days needed to move to Sunday
+            currentWeekEnd.setDate(currentWeekEnd.getDate() + dayDiff);
         }
   
         // Ensure `currentWeekEnd` is still within the same year
@@ -66,26 +65,24 @@ export default function Weeks() {
     }).format(date);
   }
   
-
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
+  const showWeekPicker = () => {
+    setWeekPickerVisibility(true);
   };
 
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
+  const hideWeekPicker = () => {
+    setWeekPickerVisibility(false);
   };
 
-  const handleConfirm = (date: Date) => {
-    const selectedSunday = new Date(date);
-    selectedSunday.setDate(selectedSunday.getDate() - selectedSunday.getDay());
+  const handleSelectWeek = (day: any) => {
+    const selectedMonday = new Date(day.dateString);
+    selectedMonday.setDate(selectedMonday.getDate() - ((selectedMonday.getDay() + 6) % 7));
   
-    const selectedSaturday = new Date(selectedSunday);
-    selectedSaturday.setDate(selectedSunday.getDate() + 6);
+    const selectedSunday = new Date(selectedMonday);
+    selectedSunday.setDate(selectedMonday.getDate() + 6);
   
-    setSelectedWeek(`${formatDate(selectedSunday)} - ${formatDate(selectedSaturday)}`);
-    hideDatePicker();
+    setSelectedWeek(`${formatDate(selectedMonday)} - ${formatDate(selectedSunday)}`);
+    hideWeekPicker();
   };
-  
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}> 
@@ -100,17 +97,10 @@ export default function Weeks() {
               onChangeText={setSearchQuery}
               style={styles.searchInput}
             />
-            <TouchableOpacity onPress={showDatePicker} style={styles.calendarButton}>
+            <TouchableOpacity onPress={showWeekPicker} style={styles.calendarButton}>
               <Ionicons name="calendar-outline" size={24} color="white" />
             </TouchableOpacity>
           </View>
-
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="date"
-            onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
-          />
 
           <FlatList
             data={weeks}
@@ -121,6 +111,24 @@ export default function Weeks() {
               </TouchableOpacity>
             )}
           />
+
+          <Modal visible={isWeekPickerVisible} transparent={true} animationType="slide">
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Calendar
+                  onDayPress={handleSelectWeek}
+                  markingType={'period'}
+                  markedDates={{
+                    ...(selectedWeek ? { [selectedWeek]: { selected: true, marked: true, selectedColor: 'blue' } } : {}),
+                  }}
+                  firstDay={1} // Start the week on Monday
+                />
+                <TouchableOpacity onPress={hideWeekPicker} style={styles.closeButton}>
+                  <ThemedText>Close</ThemedText>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
         </>
       )}
     </SafeAreaView>
@@ -154,5 +162,21 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 16,
+  },
+  closeButton: {
+    marginTop: 16,
+    alignItems: 'center',
   },
 });
