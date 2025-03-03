@@ -20,7 +20,7 @@ export default function TabLayout() {
     const checkAuth = async () => {
       // Simulating authentication check (replace with actual auth logic)
       const isLoggedIn = await fakeAuthCheck();
-      setAuth(true);
+      setAuth(false);
     };
 
     checkAuth();
